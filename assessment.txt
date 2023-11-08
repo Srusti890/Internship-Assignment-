@@ -1,0 +1,34 @@
+#include <TimerOne.h>
+int lm35Pin = A0;  // Analog pin for LM35 temperature sensor
+int ledPin = 8;    // Digital pin for the LED
+float temperature = 0;
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+ Timer1.attachInterrupt(timerCallback);
+}
+
+void loop() {
+  int sensorValue = analogRead(lm35Pin);    // reads input from sensor
+  float voltage = (sensorValue / 1023.0) * 5.0;  // LM35 voltage conversion (from physical parameter to electrical parameter)
+  temperature = (voltage - 0.5) * 100.0; // Temperature in Celsius
+
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" °C");
+
+  // Control the LED based on the temperature
+  if (temperature < 30)
+  {
+     Timer1.initialize(250000);     // 250 millis delay 
+  } 
+  else 
+  {
+     Timer1.initialize(500000);   // 500 millis delay 
+  }
+}
+
+void timerCallback() {
+  digitalWrite(ledPin, !digitalRead(ledPin));  // Toggle the LED state
+}
